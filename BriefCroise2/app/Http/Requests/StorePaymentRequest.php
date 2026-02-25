@@ -6,23 +6,31 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaymentRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'payer_id'    => ['required', 'exists:users,id'],
+            'receiver_id' => ['required', 'exists:users,id', 'different:payer_id'],
+            'amount'      => ['required', 'numeric', 'min:0.01'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'payer_id.required'       => 'Le payeur est obligatoire.',
+            'payer_id.exists'         => 'Le payeur sélectionné n\'existe pas.',
+            'receiver_id.required'    => 'Le bénéficiaire est obligatoire.',
+            'receiver_id.exists'      => 'Le bénéficiaire sélectionné n\'existe pas.',
+            'receiver_id.different'   => 'Le payeur et le bénéficiaire doivent être différents.',
+            'amount.required'         => 'Le montant est obligatoire.',
+            'amount.numeric'          => 'Le montant doit être un nombre.',
+            'amount.min'              => 'Le montant doit être supérieur à 0.',
         ];
     }
 }
