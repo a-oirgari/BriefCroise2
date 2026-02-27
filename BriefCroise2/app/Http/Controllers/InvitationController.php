@@ -48,26 +48,24 @@ class InvitationController extends Controller
 
         Invitation::create([
             'colocation_id' => $colocation->id,
-            'email'         => $email,
-            'token'         => $token,
-            'status'        => 'pending',
-            'expires_at'    => Carbon::now()->addDays(7),
+            'email' => $email,
+            'token' => $token,
+            'status' => 'pending',
+            'expires_at' => Carbon::now()->addDays(7),
         ]);
 
         $inviteUrl = route('invitations.show', $token);
+
         try {
-            Mail::raw(
-                "Vous avez été invité à rejoindre la colocation \"{$colocation->name}\".\n\nCliquez ici pour accepter : {$inviteUrl}\n\nCe lien expire dans 7 jours.",
-                function ($message) use ($email, $colocation) {
-                    $message->to($email)
-                            ->subject("Invitation – Colocation {$colocation->name}");
-                }
-            );
+            Mail::to($email)->send(new \App\Mail\InvitationMail(
+                $colocation->name,
+                $inviteUrl
+            ));
         } catch (\Exception $e) {
             
         }
 
-        return back()->with('success', "Invitation envoyée à {$email}. Lien : {$inviteUrl}");
+        return back()->with('success', "Invitation envoyée à {$email}.");
     }
 
     public function show(string $token)
@@ -108,10 +106,10 @@ class InvitationController extends Controller
         }
 
         Membership::create([
-            'user_id'       => $user->id,
+            'user_id' => $user->id,
             'colocation_id' => $invitation->colocation_id,
-            'role'          => 'member',
-            'joined_at'     => Carbon::now(),
+            'role' => 'member',
+            'joined_at' => Carbon::now(),
         ]);
 
         $invitation->update(['status' => 'accepted']);
