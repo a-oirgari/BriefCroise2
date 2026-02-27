@@ -9,6 +9,7 @@ use App\Http\Requests\StoreColocationRequest;
 use App\Http\Requests\UpdateColocationRequest;
 use App\Services\ReputationService;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Request;
 
 class ColocationController extends Controller
 {
@@ -64,7 +65,7 @@ class ColocationController extends Controller
             ->with('success', 'Colocation créée avec succès !');
     }
 
-    public function show(Colocation $colocation, \Illuminate\Http\Request $request)
+    public function show(Colocation $colocation, Request $request)
     {
         $user = User::find(session('user_id'));
 
