@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Colocation;
 use App\Models\Payment;
+use \App\Models\User;
 
 class BalanceService
 {
@@ -68,7 +69,7 @@ class BalanceService
         $settlements = [];
 
         $allUserIds = array_unique(array_merge(array_keys($debtors), array_keys($creditors)));
-        $users = \App\Models\User::whereIn('id', $allUserIds)->get()->keyBy('id');
+        $users = User::whereIn('id', $allUserIds)->get()->keyBy('id');
 
         while (!empty($debtors) && !empty($creditors)) {
             $debtorId   = array_key_first($debtors);
